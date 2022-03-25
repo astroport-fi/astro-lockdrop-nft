@@ -7,6 +7,14 @@ import { createLCDClient, createWallet, sendTransaction } from "./helpers";
 const MAX_OWNERS_PER_MSG = 50;
 const MAX_MSGS_PER_TX = 10;
 
+// https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+function shuffle(array: string[]) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
 function createMintMessages(
   minter: Wallet,
   contractAddress: string,
@@ -64,6 +72,9 @@ const argv = yargs(process.argv)
 
   const filePath = path.resolve(`../data/level_${argv["level"]}_owners.txt`);
   const owners = fs.readFileSync(filePath, "utf8").split("\n");
+
+  // We shuffle the list of owners so that the `token_id`s they get are randomized
+  shuffle(owners);
 
   const msgs = createMintMessages(minter, argv["contract-address"], argv["level"], owners);
   console.log(`Created ${msgs.length} messages`);
