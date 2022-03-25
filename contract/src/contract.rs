@@ -6,7 +6,7 @@ use cw721_base::{state::TokenInfo, ContractError, Cw721Contract};
 use cw721_metadata_onchain::Metadata;
 
 use crate::msg::{ExecuteMsg, InstantiateMsg, MigrateMsg, QueryMsg};
-use crate::state::{METADATA, MINTER};
+use crate::state::METADATA;
 
 // We extend the generic CW721 contract
 // For each token, we only store which level it is, specified by an `u8` which can take on the values of 1, 2, 3
@@ -20,12 +20,11 @@ pub fn instantiate(
     msg: InstantiateMsg,
 ) -> StdResult<Response> {
     let parent = Parent::default();
+    let minter_addr = deps.api.addr_validate(&msg.minter)?;
 
     parent.contract_info.save(deps.storage, &msg.contract_info)?;
     parent.token_count.save(deps.storage, &0)?;
-
-    let minter_addr = deps.api.addr_validate(&msg.minter)?;
-    MINTER.save(deps.storage, &minter_addr)?;
+    parent.minter.save(deps.storage, &minter_addr)?;
 
     for (i, metadata) in msg.metadatas.iter().enumerate() {
         METADATA.save(deps.storage, (i as u8 + 1).into(), metadata)?;
@@ -49,6 +48,9 @@ pub fn execute(
             level,
             owners,
         } => execute_mint(deps, info, level, owners),
+        ExecuteMsg::UpdateMinter {
+             new_minter
+        } => execute_update_minter(deps, info, new_minter),
 
         // Generic CW721 commands; we simply dispatch them to parent
         ExecuteMsg::TransferNft {
@@ -85,14 +87,14 @@ pub fn execute_mint(
     level: u8,
     owners: Vec<String>,
 ) -> Result<Response, ContractError> {
-    let minter_addr = MINTER.load(deps.storage)?;
+    let parent = Parent::default();
+
+    let minter_addr = parent.minter.load(deps.storage)?;
     if info.sender != minter_addr {
         return Err(ContractError::Unauthorized {});
     }
-
-    let parent = Parent::default();
+    
     let mut token_count = parent.token_count.load(deps.storage)?;
-
     for owner in &owners {
         token_count += 1; // No need for safe math. No way we're gonna mint more than 2^64 tokens lol
         parent.tokens.save(
@@ -115,6 +117,27 @@ pub fn execute_mint(
         .add_attribute("num_minted", owners.len().to_string()))
 }
 
+pub fn execute_update_minter(
+    deps: DepsMut,
+    info: MessageInfo,
+    new_minter: String,
+) -> Result<Response, ContractError> {
+    let parent = Parent::default();
+
+    let minter_addr = parent.minter.load(deps.storage)?;
+    if info.sender != minter_addr {
+        return Err(ContractError::Unauthorized {});
+    }
+
+    let new_minter_addr = deps.api.addr_validate(&new_minter)?;
+    parent.minter.save(deps.storage, &new_minter_addr)?;
+
+    Ok(Response::new()
+        .add_attribute("action", "lockdrop-nft/execute/update_minter")
+        .add_attribute("current_minter", minter_addr)
+        .add_attribute("new_minter", new_minter_addr))
+}
+
 #[entry_point]
 pub fn query(deps: Deps, env: Env, msg: QueryMsg) -> StdResult<Binary> {
     let parent = Parent::default();
@@ -131,6 +154,7 @@ pub fn query(deps: Deps, env: Env, msg: QueryMsg) -> StdResult<Binary> {
 
         // Generic CW721 queries; we simply dispatch them to parent
         QueryMsg::ContractInfo {} => to_binary(&parent.contract_info(deps)?),
+        QueryMsg::Minter {} => to_binary(&parent.minter(deps)?),
         QueryMsg::NumTokens {} => to_binary(&parent.num_tokens(deps)?),
         QueryMsg::OwnerOf {
             token_id,

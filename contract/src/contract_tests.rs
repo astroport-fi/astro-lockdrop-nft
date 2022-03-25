@@ -6,7 +6,7 @@ use cw721::{
     AllNftInfoResponse, ContractInfoResponse, NftInfoResponse, NumTokensResponse, OwnerOfResponse,
     TokensResponse,
 };
-use cw721_base::ContractError;
+use cw721_base::{ContractError, MinterResponse};
 use cw721_metadata_onchain::{Metadata, Trait};
 use serde::de::DeserializeOwned;
 
@@ -168,6 +168,40 @@ fn minting() {
         },
     );
     assert_eq!(res.tokens, vec!["3", "5"]);
+}
+
+#[test]
+fn updating_minter() {
+    let mut deps = setup_test();
+
+    let res: MinterResponse = query_helper(deps.as_ref(), QueryMsg::Minter {});
+    assert_eq!(res.minter, String::from("larry"));
+
+    // Non-minter cannot update minter
+    let err = execute(
+        deps.as_mut(),
+        mock_env(),
+        mock_info("jake", &[]),
+        ExecuteMsg::UpdateMinter {
+            new_minter: String::from("jake"),
+        },
+    )
+    .unwrap_err();
+    assert_eq!(err, ContractError::Unauthorized {});
+
+    // Minter can update minter
+    execute(
+        deps.as_mut(),
+        mock_env(),
+        mock_info("larry", &[]),
+        ExecuteMsg::UpdateMinter {
+            new_minter: String::from("jake"),
+        },
+    )
+    .unwrap();
+
+    let res: MinterResponse = query_helper(deps.as_ref(), QueryMsg::Minter {});
+    assert_eq!(res.minter, String::from("jake"));
 }
 
 #[test]

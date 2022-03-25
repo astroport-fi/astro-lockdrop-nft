@@ -26,6 +26,10 @@ pub enum ExecuteMsg {
         level: u8,
         owners: Vec<String>,
     },
+    /// Update the minter address
+    UpdateMinter {
+        new_minter: String,
+    },
 
     //----------------------------------------
     // Generic CW721 commands
@@ -58,8 +62,8 @@ pub enum ExecuteMsg {
     },
 }
 
-/// We use the generic CW721 query messages
-pub type QueryMsg = cw721::Cw721QueryMsg;
+/// We use the query messages from `cw721_base`
+pub type QueryMsg = cw721_base::QueryMsg;
 
 /// We don't need any input parameter for migration
 pub type MigrateMsg = Empty;
