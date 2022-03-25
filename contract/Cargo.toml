@@ -3,7 +3,7 @@ name = "lockdrop-nft"
 version = "1.0.0"
 authors = ["larry <larry@delphidigital.io>"]
 edition = "2018"
-license = "UNLICENSED"
+license = "GPL-3.0-or-later"
 repository = "https://github.com/astroport-fi/lockdrop-nft"
 
 [lib]
