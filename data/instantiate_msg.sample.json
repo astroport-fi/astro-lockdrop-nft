@@ -1,0 +1,57 @@
+{
+  "contract_info": {
+    "name": "Test NFT",
+    "symbol": "n/a"
+  },
+  "metadatas": [
+    {
+      "name": "Test NFT Level I",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "external_url": "https://larry.engineer",
+      "image": "ipfs://...",
+      "attributes": [
+        {
+          "trait_type": "protocol",
+          "value": "test"
+        },
+        {
+          "trait_type": "level",
+          "value": "1"
+        }
+      ]
+    },
+    {
+      "name": "Test NFT Level II",
+      "description": "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+      "external_url": "https://larry.engineer",
+      "image": "ipfs://...",
+      "attributes": [
+        {
+          "trait_type": "protocol",
+          "value": "test"
+        },
+        {
+          "trait_type": "level",
+          "value": "2"
+        }
+      ]
+    },
+    {
+      "name": "Test NFT Level III",
+      "description": "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+      "external_url": "https://larry.engineer",
+      "image": "ipfs://...",
+      "attributes": [
+        {
+          "trait_type": "protocol",
+          "value": "test"
+        },
+        {
+          "trait_type": "level",
+          "value": "3"
+        }
+      ]
+    }
+  ],
+  "minter": "terra1z926ax906k0ycsuckele6x5hh66e2m4m5udwep"
+}
