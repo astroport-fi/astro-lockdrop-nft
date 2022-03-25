@@ -1,11 +1,14 @@
 # cosmwasm compiled contract binaries
-artifacts
+**/artifacts/
 
 # cargo files
-target
+**/target/
 
 # javascript dependencies
-node_modules
+node_modules/
+
+# data folder
+data/
 
 # environment variables
 .env*
