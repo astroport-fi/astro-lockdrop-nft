@@ -1,0 +1,31 @@
+[package]
+name = "lockdrop-nft"
+version = "1.0.0"
+authors = ["larry <larry@delphidigital.io>"]
+edition = "2018"
+license = "UNLICENSED"
+repository = "https://github.com/astroport-fi/lockdrop-nft"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+backtraces = ["cosmwasm-std/backtraces"]
+
+[profile.release]
+rpath = false
+lto = true
+overflow-checks = true
+
+[dependencies]
+cosmwasm-std = "0.16"
+cw-storage-plus = "0.9"
+schemars = "0.8.1"
+serde = { version = "1.0.103", default-features = false, features = ["derive"] }
+
+# `cw-nfts` v0.9.3 starts to use `cosmwasm_std` v1.0, so we must strictly enforce `=0.9.2`
+cw721 = "=0.9.2"
+
+# Must use `library` feature to exclude entry points
+cw721-base = { version = "=0.9.2", features = ["library"] }
+cw721-metadata-onchain = { version = "=0.9.2", features = ["library"] }
