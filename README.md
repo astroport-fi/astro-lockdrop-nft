@@ -4,4 +4,4 @@ This repository contains smart contract code for Astroport lockdrop NFT, as well
 
 ## License
 
-TBD
+Contents of this repository are open source under [GNU General Public License v3](./LICENSE) or later.
