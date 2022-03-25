@@ -2,10 +2,11 @@ import * as fs from "fs";
 import * as path from "path";
 import yargs from "yargs/yargs";
 import { Wallet, Msg, MsgExecuteContract } from "@terra-money/terra.js";
-import { createLCDClient, createWallet, sendTransaction } from "./helpers";
+import { createLCDClient, createWallet, sendTxWithConfirm } from "./helpers";
 
 const MAX_OWNERS_PER_MSG = 50;
 const MAX_MSGS_PER_TX = 10;
+const DEFAULT_GAS = (10_000_000).toString();
 
 // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
 function shuffle(array: string[]) {
@@ -82,9 +83,12 @@ const argv = yargs(process.argv)
   const batches = createMsgBatches(msgs);
   console.log(`Created ${batches.length} batches`);
 
+  const sequence = await minter.sequence();
+  console.log(`Queried minter sequence: ${sequence}`);
+
   for (let i = 0; i < batches.length; i++) {
     process.stdout.write(`Broadcasting tx ${i + 1}/${batches.length}... `);
-    const { txhash } = await sendTransaction(minter, batches[i]);
+    const { txhash } = await sendTxWithConfirm(minter, batches[i], sequence + i, DEFAULT_GAS);
     console.log(`Success! Txhash: ${txhash}`);
   }
 })();

@@ -18,6 +18,10 @@ const argv = yargs(process.argv)
       type: "string",
       demandOption: true,
     },
+    admin: {
+      type: "string",
+      demandOption: true,
+    },
     binary: {
       type: "string",
       demandOption: false,
@@ -41,7 +45,7 @@ const argv = yargs(process.argv)
     console.log(`Code uploaded! codeId: ${codeId}`);
   }
 
-  const result = await instantiateWithConfirm(deployer, codeId, msg);
+  const result = await instantiateWithConfirm(deployer, argv["admin"], codeId, msg);
   const address = result.logs[0].eventsByType.instantiate_contract.contract_address[0];
   console.log(`Contract instantiated! address: ${address}`);
 })();
