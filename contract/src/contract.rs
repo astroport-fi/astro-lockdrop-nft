@@ -101,7 +101,7 @@ pub fn execute_mint(
             deps.storage,
             &token_count.to_string(),
             &TokenInfo {
-                owner: deps.api.addr_validate(&owner)?,
+                owner: deps.api.addr_validate(owner)?,
                 approvals: vec![],
                 token_uri: None,
                 extension: level,
