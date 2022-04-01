@@ -76,6 +76,7 @@ const argv = yargs(process.argv)
 
   // We shuffle the list of owners so that the `token_id`s they get are randomized
   shuffle(owners);
+  fs.writeFileSync(`.level_${argv["level"]}_owners_shuffled.json`, JSON.stringify(owners, null, 2));
 
   const msgs = createMintMessages(minter, argv["contract-address"], argv["level"], owners);
   console.log(`Created ${msgs.length} messages`);
@@ -88,7 +89,11 @@ const argv = yargs(process.argv)
 
   for (let i = 0; i < batches.length; i++) {
     process.stdout.write(`Broadcasting tx ${i + 1}/${batches.length}... `);
-    const { txhash } = await sendTxWithConfirm(minter, batches[i], sequence + i, DEFAULT_GAS);
-    console.log(`Success! Txhash: ${txhash}`);
+    try {
+      const { txhash } = await sendTxWithConfirm(minter, batches[i], sequence + i, DEFAULT_GAS);
+      console.log(`Success! Txhash: ${txhash}`);
+    } catch (err) {
+      console.log("Tx result or unable to confirm result!");
+    }
   }
 })();
